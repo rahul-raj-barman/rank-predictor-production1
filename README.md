@@ -75,9 +75,9 @@ Cloudflare Pages dashboard settings:
 
 ```text
 Framework preset: None or Next.js (Static HTML Export)
-Root directory: /
-Build command: bash scripts/cloudflare-pages-build.sh
-Build output directory: apps/web/out
+Root directory: apps/web
+Build command: bash cloudflare-pages-build.sh
+Build output directory: out
 Production branch: main
 Environment variable: NODE_VERSION = 22.16.0
 ```
