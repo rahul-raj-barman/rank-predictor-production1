@@ -82,6 +82,8 @@ Production branch: main
 Environment variable: NODE_VERSION = 22.16.0
 ```
 
+The Pages Wrangler config lives at `apps/web/wrangler.jsonc`. It is intentionally a Pages config with `pages_build_output_dir`; do not add a Workers `main` entry for this static export.
+
 The build script installs the minimal Rust toolchain if Cloudflare does not already have it, adds the `wasm32-unknown-unknown` target, installs `wasm-pack`, compiles the Rust engine, and then exports the Next.js site.
 
 If you later add API routes, authentication, ISR, or SSR, switch from Pages static export to Cloudflare Workers with the OpenNext adapter (`@opennextjs/cloudflare`).
