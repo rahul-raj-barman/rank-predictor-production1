@@ -191,7 +191,7 @@ export default function PredictorForm({ exam }: PredictorFormProps) {
             <div className="mt-7 rounded-lg border border-slate-200 bg-slate-50 p-5">
               <p className="text-sm font-semibold text-slate-600">Expected rank</p>
               <div className="mt-2 min-h-16 text-4xl font-semibold text-slate-950">
-                {expectedRank !== null ? formatRank(expectedRank) : "—"}
+                {expectedRank !== null ? formatRank(expectedRank) : "-"}
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-600">
                 Model inputs: mean {exam.mean}, standard deviation{" "}
