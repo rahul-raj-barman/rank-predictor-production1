@@ -29,6 +29,13 @@ export type ExamStats = {
   keywords: readonly string[];
 };
 
+const examRouteAliases: Record<string, readonly string[]> = {
+  "jee-mains-2027": ["jee-main-marks-vs-rank-2027"],
+  "neet-ug-2027": ["neet-marks-vs-rank-2027"],
+  "gate-cs-2027": ["gate-cs-marks-vs-rank-2027"],
+  "ssc-cgl-2027": ["ssc-cgl-marks-vs-rank-2027"],
+};
+
 export const exams: readonly ExamStats[] = [
   {
     slug: "jee-mains-2027",
@@ -456,6 +463,46 @@ export function getExamBySlug(slug: string): ExamStats | undefined {
   return exams.find((exam) => exam.slug === slug);
 }
 
+export type ExamRoute = {
+  exam: ExamStats;
+  slug: string;
+  isMarksVsRankPage: boolean;
+};
+
+export function getExamRouteBySlug(slug: string): ExamRoute | undefined {
+  const directExam = getExamBySlug(slug);
+
+  if (directExam) {
+    return {
+      exam: directExam,
+      slug,
+      isMarksVsRankPage: false,
+    };
+  }
+
+  const aliasedExam = exams.find((exam) =>
+    examRouteAliases[exam.slug]?.includes(slug),
+  );
+
+  if (!aliasedExam) {
+    return undefined;
+  }
+
+  return {
+    exam: aliasedExam,
+    slug,
+    isMarksVsRankPage: true,
+  };
+}
+
+export function getAllExamRouteSlugs(): readonly string[] {
+  return exams.flatMap((exam) => [exam.slug, ...(examRouteAliases[exam.slug] ?? [])]);
+}
+
+export function getPrimaryExamSlugForRoute(slug: string): string | undefined {
+  return getExamRouteBySlug(slug)?.exam.slug;
+}
+
 export function getExamFaqs(exam: ExamStats): readonly ExamFaq[] {
   return [
     {
@@ -477,4 +524,30 @@ export function getExamFaqs(exam: ExamStats): readonly ExamFaq[] {
 
 export function getExamCategories(): readonly ExamCategory[] {
   return Array.from(new Set(exams.map((exam) => exam.category)));
+}
+
+export function getRelatedExams(exam: ExamStats): readonly ExamStats[] {
+  const preferredGroups: Record<string, readonly string[]> = {
+    "jee-mains-2027": ["jee-advanced-2027", "neet-ug-2027", "cuet-ug-2027"],
+    "jee-advanced-2027": ["jee-mains-2027", "gate-cs-2027", "neet-ug-2027"],
+    "neet-ug-2027": ["jee-mains-2027", "cuet-ug-2027", "upsc-prelims-2027"],
+    "gate-cs-2027": ["gate-da-2027", "gate-me-2027", "gate-ee-2027"],
+    "gate-da-2027": ["gate-cs-2027", "gate-me-2027", "cat-2027"],
+    "ssc-cgl-2027": ["ssc-chsl-2027", "ssc-gd-2027", "ssc-mts-2027"],
+    "ssc-chsl-2027": ["ssc-cgl-2027", "ssc-gd-2027", "ssc-mts-2027"],
+    "upsc-prelims-2027": ["state-psc-prelims-2027", "bpsc-prelims-2027", "uppsc-prelims-2027"],
+  };
+
+  const preferred = preferredGroups[exam.slug]
+    ?.map((slug) => getExamBySlug(slug))
+    .filter((item): item is ExamStats => Boolean(item)) ?? [];
+
+  const categoryFallback = exams.filter(
+    (candidate) =>
+      candidate.category === exam.category &&
+      candidate.slug !== exam.slug &&
+      !preferred.some((item) => item.slug === candidate.slug),
+  );
+
+  return [...preferred, ...categoryFallback].slice(0, 5);
 }

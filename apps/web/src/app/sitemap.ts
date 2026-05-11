@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { exams } from "@/data/exams";
+import { getAllExamRouteSlugs } from "@/data/exams";
+import { hubPages } from "@/data/hubs";
 
 const siteUrl = "https://www.sikshalabh.com";
 
@@ -15,8 +16,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
-    ...exams.map((exam) => ({
-      url: `${siteUrl}/exam/${exam.slug}`,
+    ...hubPages.map((hub) => ({
+      url: `${siteUrl}/${hub.slug}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.95,
+    })),
+    ...getAllExamRouteSlugs().map((slug) => ({
+      url: `${siteUrl}/exam/${slug}`,
       lastModified,
       changeFrequency: "weekly" as const,
       priority: 0.9,

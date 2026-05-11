@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { exams, getExamCategories } from "@/data/exams";
+import { hubPages } from "@/data/hubs";
 
 export default function HomePage() {
   const categories = getExamCategories();
@@ -20,6 +21,26 @@ export default function HomePage() {
             page is statically generated and loads a Rust WebAssembly rank
             engine in the browser.
           </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {hubPages.map((hub) => (
+            <Link
+              key={hub.slug}
+              href={`/${hub.slug}`}
+              className="rounded-lg border border-teal-200 bg-teal-50 p-5 shadow-sm transition hover:border-teal-500 hover:shadow-md"
+            >
+              <span className="text-sm font-semibold text-teal-800">
+                SEO Hub
+              </span>
+              <h2 className="mt-2 text-lg font-semibold text-slate-950">
+                {hub.h1}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                {hub.description}
+              </p>
+            </Link>
+          ))}
         </div>
 
         {categories.map((category) => {
